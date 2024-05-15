@@ -1,6 +1,7 @@
 require "sinatra"
 require "sinatra/reloader"
 require "http"
+require 'sinatra/cookies'
 get("/") do
   erb(:main)
 end
@@ -25,7 +26,6 @@ post("/process_umbrella") do
   @pirate_response = JSON.parse(HTTP.get(pirate_weather_url).to_s)
   @temp = @pirate_response.fetch("currently").fetch("temperature")
   @skies = @pirate_response.fetch("currently").fetch("summary")
-  #@api = ''
 
   hourly_data_array = @pirate_response.fetch("hourly").fetch('data')
 
@@ -69,6 +69,14 @@ get("/chat") do
   erb(:chat)
 end
 post("/add_message_to_chat") do
+  cookies.store('uMessage',params.fetch('user_message'))
+  #api side
+  client = OpenAI::Client.new(
+  access_token: ENV.fetch('OPENAI_API_KEY'),
+  log_errors: true # Highly recommended in development, so you can see what errors OpenAI is returning. Not recommended in production.
+)
+  #gptkey= 
+  #cookies.store('aiMessage',)
   erb(:chat)
 end
 post("/clear_chat") do
